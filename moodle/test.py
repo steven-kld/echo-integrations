@@ -10,7 +10,7 @@ headers = {
 payload = {
     "email": "test@test.com",
     "courseid": 2,
-    "score": 55,
+    "score": 5,
     "comment": "Passed with a good explanation."
 }
 

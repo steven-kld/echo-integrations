@@ -53,37 +53,30 @@ if (!$course) {
     exit;
 }
 
-// 🧮 Grade item check/create
+// 🧮 Build label-based grade item name
+$label = 'GRADE: ' . $score;
+if (!empty($feedback)) {
+    $label .= ' ' . $feedback;
+}
+
+// 🧮 Static grade item with editable feedback
 try {
     $grade_item = grade_item::fetch([
         'courseid' => $courseid,
         'itemtype' => 'manual',
-        'itemname' => 'Echo Interview'
+        'itemname' => 'Echo Review'
     ]);
 
     if (!$grade_item) {
         $grade_item = new grade_item([
             'courseid' => $courseid,
             'itemtype' => 'manual',
-            'itemname' => 'Echo Interview',
+            'itemname' => 'Echo Review',
             'gradetype' => GRADE_TYPE_VALUE,
             'grademax' => 100,
             'grademin' => 0
         ]);
         $grade_item->insert();
-    }
-
-    // force-correct broken grade items
-    if (empty($grade_item->id)) {
-        $grade_item->insert();
-    }
-    if ($grade_item->gradetype != GRADE_TYPE_VALUE || $grade_item->grademax < $score) {
-        $grade_item->gradetype = GRADE_TYPE_VALUE;
-        $grade_item->grademax = 100;
-        $grade_item->grademin = 0;
-        $grade_item->scaleid = null;
-        $grade_item->itemnumber = null;
-        $grade_item->update();
     }
 } catch (Exception $e) {
     http_response_code(500);
@@ -91,26 +84,23 @@ try {
     exit;
 }
 
-// 📝 Grade update
+// 📝 Update grade AND comment
 try {
     $grade_item->update_final_grade(
-        $user->id,
-        $score
-    );
+        userid: $user->id,
+        finalgrade: $score,
+        source: 'plugin',
+        feedback: $label,
+        feedbackformat: FORMAT_PLAIN,
+        usermodified: get_admin()->id
+    );    
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
         'error' => 'grade_update_error',
-        'message' => $e->getMessage(),
-        'debug' => [
-            'userid' => $user->id,
-            'score' => $score,
-            'source' => 'plugin',
-            'component' => 'local_echo_integration'
-        ]
+        'message' => $e->getMessage()
     ]);
     exit;
 }
 
-// 🎉 Success
 echo json_encode(['status' => 'ok']);
