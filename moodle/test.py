@@ -10,7 +10,7 @@ headers = {
 payload = {
     "userid": 4,
     "courseid": 2,
-    "score": 4,
+    "score": 3,
     "comment": "Passed with a good explanation.!"
 }
 
