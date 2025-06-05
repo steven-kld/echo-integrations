@@ -35,7 +35,8 @@ class filter_echo_url extends moodle_text_filter {
                 'in' => 'moodle',
                 'user' => $userid,
                 'section' => $courseid,
-                'grade' => $gradename
+                'grade' => $gradename,
+                'api' => (new moodle_url('/filter/echo_url/api.php'))->out(false)
             ]);
     
             // Replace with styled Echo button
