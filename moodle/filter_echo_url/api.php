@@ -81,7 +81,7 @@ try {
         userid: $user->id,
         finalgrade: $score,
         source: 'filter_echo_url',
-        feedback: round($score) . '/100 - ' . $review,
+        feedback: round($score) . '/5 - ' . $review,
         feedbackformat: FORMAT_PLAIN,
         usermodified: get_admin()->id
     );
