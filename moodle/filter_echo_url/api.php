@@ -25,20 +25,20 @@ if (strpos($authHeader, 'Bearer ') !== 0 || trim(substr($authHeader, 7)) !== 'yo
 
 // 📥 Input
 $input = json_decode(file_get_contents("php://input"), true);
-$email = trim($input['email'] ?? '');
+$userid = intval($input['userid'] ?? 0);
 $courseid = (int) ($input['courseid'] ?? 0);
 $score = (float) ($input['score'] ?? 100);
 $feedback = $input['comment'] ?? 'Completed via Echo interview.';
 
 // 📌 Validate input
-if (empty($email) || empty($courseid)) {
+if (empty($userid) || empty($courseid)) {
     http_response_code(400);
     echo json_encode(['error' => 'Missing required fields']);
     exit;
 }
 
 // 👤 Find user
-$user = $DB->get_record('user', ['email' => $email]);
+$user = $DB->get_record('user', ['id' => $userid]);
 if (!$user) {
     http_response_code(404);
     echo json_encode(['error' => 'User not found']);

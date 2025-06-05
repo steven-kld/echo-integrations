@@ -8,10 +8,10 @@ headers = {
 }
 
 payload = {
-    "email": "test@test.com",
+    "userid": 4,
     "courseid": 2,
-    "score": 5,
-    "comment": "Passed with a good explanation."
+    "score": 4,
+    "comment": "Passed with a good explanation.!"
 }
 
 response = requests.post(API_URL, json=payload, headers=headers)
