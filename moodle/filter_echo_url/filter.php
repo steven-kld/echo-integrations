@@ -1,21 +1,38 @@
 <?php
+
+defined('MOODLE_INTERNAL') || die();
+
+if (!isset($CFG)) {
+    require_once(dirname(__DIR__, 2) . '/config.php');
+}
+require_once($CFG->libdir . '/gradelib.php');
+
 class filter_echo_url extends moodle_text_filter {
     public function filter($text, array $options = []) {
-        global $USER, $COURSE;
+        global $USER, $COURSE, $PAGE;
 
         if (!is_string($text) || strpos($text, '{echo_url}') === false) {
             return $text;
         }
 
-        $userid = isset($USER->id) ? intval($USER->id) : 0;
-        $courseid = isset($COURSE->id) ? intval($COURSE->id) : 0;
+        $userid = intval($USER->id ?? 0);
+        $courseid = intval($COURSE->id ?? 0);
+        $cmid = intval($PAGE->cm->id ?? 0);
+        $title = $PAGE->cm->name ?? 'Untitled';
+        $gradename = "Echo: {$title} ({$cmid})";
 
+        // Auto-create grade item if it doesn't exist
+        $this->ensure_grade_item_exists($courseid, $gradename, $cmid);
+
+        // Build Echo URL with full context
         $url = new moodle_url('https://talk.getecho.io', [
             'in' => 'moodle',
-            'user' => $USER->id,
-            'section' => $COURSE->id
+            'user' => $userid,
+            'section' => $courseid,
+            'grade' => $gradename
         ]);
 
+        // Render gradient button
         $button = html_writer::tag('a', 'Open Echo Interview', [
             'href' => $url->out(false),
             'target' => '_blank',
@@ -35,5 +52,34 @@ class filter_echo_url extends moodle_text_filter {
         ]);
 
         return str_replace('{echo_url}', $button, $text);
+    }
+
+    private function ensure_grade_item_exists($courseid, $gradename, $cmid) {
+        global $DB;
+    
+        $idnumber = 'echo_' . $cmid;
+    
+        // Check if grade item exists by idnumber (reliable and unique)
+        $exists = $DB->record_exists('grade_items', [
+            'courseid' => $courseid,
+            'idnumber' => $idnumber,
+            'itemtype' => 'manual'
+        ]);
+    
+        if ($exists) {
+            return;
+        }
+    
+        // ❗ Use direct object creation to avoid unintended updates
+        $grade_item = new grade_item([
+            'courseid' => $courseid,
+            'itemtype' => 'manual',
+            'itemname' => $gradename,
+            'idnumber' => $idnumber,
+            'gradetype' => GRADE_TYPE_TEXT
+        ]);
+    
+        $grade_item->insert();
+        $grade_item->update();
     }
 }

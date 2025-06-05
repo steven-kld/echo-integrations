@@ -9,9 +9,10 @@ headers = {
 
 payload = {
     "userid": 4,
-    "courseid": 2,
-    "score": 3,
-    "comment": "Passed with a good explanation.!"
+    "courseid": 4,
+    "gradeitem": "Echo: Pearl Harbor (6)",
+    "score": 65,
+    "review": "Passed with a good explana!"
 }
 
 response = requests.post(API_URL, json=payload, headers=headers)
