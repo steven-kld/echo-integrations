@@ -15,8 +15,8 @@ class filter_echo_url extends moodle_text_filter {
             return $text;
         }
     
-        // Match either: full <a href="https://talk.getecho.io?..."> or raw bare link
-        $pattern = '#<a[^>]+href="(https://talk\.getecho\.io\?[^"]+)"[^>]*>[^<]*</a>|(?<!href=")(https://talk\.getecho\.io\?[^"\s<]+)#';
+        // Match either: full <a href="https://talk.echoai.ge?..."> or raw bare link
+        $pattern = '#<a[^>]+href="(https://talk\.echoai\.ge\?[^"]+)"[^>]*>[^<]*</a>|(?<!href=")(https://talk\.echoai\.ge\?[^"\s<]+)#';
     
         return preg_replace_callback($pattern, function ($match) use ($USER, $COURSE, $PAGE) {
             $baseurl = $match[1] ?? $match[2];
