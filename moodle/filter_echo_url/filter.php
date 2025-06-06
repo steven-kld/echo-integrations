@@ -42,7 +42,7 @@ class filter_echo_url extends moodle_text_filter {
             ]);
     
             // Replace with styled Echo button
-            return html_writer::tag('a', 'Open Echo Interview', [
+            return html_writer::tag('a', 'Start Test', [
                 'href' => $url->out(false),
                 'target' => '_blank',
                 'class' => 'btn btn-primary',
