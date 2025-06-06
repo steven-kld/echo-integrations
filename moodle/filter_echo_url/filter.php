@@ -22,6 +22,7 @@ class filter_echo_url extends moodle_text_filter {
             $baseurl = $match[1] ?? $match[2];
     
             $userid = intval($USER->id ?? 0);
+            $email = (!empty($USER->email)) ? $USER->email : 'moodle_' . $userid;
             $courseid = intval($COURSE->id ?? 0);
             $cmid = intval($PAGE->cm->id ?? 0);
             $title = $PAGE->cm->name ?? 'Untitled';
@@ -32,6 +33,7 @@ class filter_echo_url extends moodle_text_filter {
     
             // Extend Echo URL with Moodle-specific context
             $url = new moodle_url($baseurl, [
+                'c' => $email,
                 'in' => 'moodle',
                 'user' => $userid,
                 'section' => $courseid,
